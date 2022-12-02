@@ -8,8 +8,8 @@ st.set_page_config(layout="wide")
 
 import pandas as pd
 import pickle
-#import matplotlib
-#from matplotlib import pyplot as plt
+import matplotlib
+from matplotlib import pyplot as plt
 import time
 import random
 #import tensorflow as tf
@@ -85,7 +85,7 @@ def randomDisplay(df_results, epoch1, epoch2):
 pages = ["CTC loss", "Exploration du dataset", "Modèle", "Pipeline", 
          "Résultats", "Conclusion et perspectives"]
 
-page = st.sidebar.radio("select", pages)
+page = st.sidebar.radio("navigate", pages)
 
 if page==pages[0]:
     st.title("CTC loss")
