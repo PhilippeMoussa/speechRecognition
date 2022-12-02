@@ -82,8 +82,8 @@ def randomDisplay(df_results, epoch1, epoch2):
 
 
 
-pages = ["CTC loss", "Exploration du dataset", "Modèle", "Pipeline", 
-         "Résultats", "Conclusion et perspectives"]
+pages = ["CTC loss", "Dataset exploration", "Model", "Pipeline", 
+         "Results", "Conclusion"]
 
 page = st.sidebar.radio("navigate", pages)
 
