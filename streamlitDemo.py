@@ -133,12 +133,11 @@ if page==pages[1]:
     st.header('LibriSpeech extract - English')    
     
     st.write("""
-             We will work on 30+ k (7 Go / 100h) of records and their transcripts.
-             To begin with, we need to :
-                 
+             Working on 30+ k (7 Go / 100+ h) of records and their transcripts, we need to:
+                        
             - normalize the audio duration
             
-            - ensure consistency between transcript's length and our choice of time-step
+            - maintain consistency between transcript's length and our choice of time-step
              """)
     
     with open('data/train_metadata_full', 'rb') as f:
@@ -183,14 +182,13 @@ if page==pages[1]:
 if page==pages[2]:
     
     st.title('Model')
-    st.subheader("Structure derived from Deep Speech 2")
-    
+    st.subheader("Building on a structure derived from Deep Speech 2 ")
     st.markdown("##")
     
     col1, col2, col3 = st.columns(3)
 
     with col1:    
-        couchesConvolution = st.checkbox('Convlutional layers')
+        couchesConvolution = st.checkbox('Convolutional layers')
     with col2:
         couchesRNN = st.checkbox('RNN layers')
     with col3:
