@@ -83,10 +83,10 @@ def randomDisplay(df_results, epoch1, epoch2):
 
 class audioFile:
 
-    def __init__(self, filename, normalize=False, root_path=""):
+    def __init__(self, filename, normalize=False, root_path="", sr = 16000):
 
         self.audioSignal, self.samplingFrequency = librosa.load(
-            path=filename, sr=None)
+            path=filename, sr=sr)
 
         if normalize:
             average = np.mean(self.audioSignal)
@@ -213,7 +213,7 @@ def CTC_loss(y_test, y_pred):
 
 
 def predict(model, filePath):
-    logMelSpectrogram = audioFile(filePath, normalize=True).subsample(3).normalizeLength(17) \
+    logMelSpectrogram = audioFile(filePath, normalize=True, sr=16000).normalizeLength(17) \
         .logMelSpectrogram(k_temp=.7, k_freq=1.5)
     logMelSpectrogram = np.array([(logMelSpectrogram)])
     pred = "prediction: " + \
