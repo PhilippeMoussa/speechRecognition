@@ -8,7 +8,8 @@ st.set_page_config(layout="wide")
 
 import pandas as pd
 import pickle
-import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import pyplot as plt
 import time
 import random
 #import tensorflow as tf
