@@ -112,8 +112,8 @@ if page==pages[0]:
                      """)
     
     with col2:
-        st.image('spectro.jpg', width = 400)
-        cats = ['script1.jpg', 'script2.jpg', 'script3.jpg', 'script4.jpg', 'script5.jpg']
+        st.image('images/spectro.jpg', width = 400)
+        cats = ['images/script1.jpg', 'images/script2.jpg', 'images/script3.jpg', 'images/script4.jpg', 'images/script5.jpg']
         placeholder = st.empty()
         k=0
         if alignement:
@@ -123,7 +123,7 @@ if page==pages[0]:
                 k+=1
                 time.sleep(1)
         if CTC:
-            st.image('scripts.jpg', width = 400)
+            st.image('images/scripts.jpg', width = 400)
         
     
 if page==pages[1]:
@@ -140,9 +140,9 @@ if page==pages[1]:
             - maintenir la compatibilité entre la longueur des étiquettes et la résolution temporelle utilisée
              """)
     
-    with open('train_metadata_full', 'rb') as f:
+    with open('data/train_metadata_full', 'rb') as f:
         df_train = pickle.load(f)
-    with open('test_metadata_full', 'rb') as f:
+    with open('data/test_metadata_full', 'rb') as f:
         df_test = pickle.load(f)
         
     rootPathTrain = '/content/drive/My Drive/LibriSpeech/train/'
@@ -195,18 +195,18 @@ if page==pages[2]:
     with col3:
         output = st.checkbox('output')
         
-    st.image('model0.jpg')
+    st.image('images/model0.jpg')
     
     placeholder1 = st.empty()
     placeholder2 = st.empty()
     placeholder3 = st.empty()
     
     if couchesConvolution:
-        st.image('model1.jpg')
+        st.image('images/model1.jpg')
     if couchesRNN:
-        st.image('model2.jpg')
+        st.image('images/model2.jpg')
     if output:
-        st.image('model3.jpg')
+        st.image('images/model3.jpg')
 
 
 if page==pages[3]:
@@ -226,7 +226,7 @@ if page==pages[3]:
     
     st.write("\n")
 
-    st.image('pipeline0.jpg')
+    st.image('images/pipeline0.jpg')
     
     placeholder1 = st.empty()
     placeholder2 = st.empty()
@@ -234,17 +234,17 @@ if page==pages[3]:
     placeholder4 = st.empty()
     
     if preprocessing:
-        placeholder1.image('pipeline1.jpg')
+        placeholder1.image('images/pipeline1.jpg')
     if augmentation:
-        placeholder2.image('pipeline2.jpg')
+        placeholder2.image('images/pipeline2.jpg')
     if modele:
-        placeholder3.image('pipeline3.jpg')
-        placeholder4.image('pipeline4.jpg')
+        placeholder3.image('images/pipeline3.jpg')
+        placeholder4.image('images/pipeline4.jpg')
 
     
 if page==pages[4]:
     
-    with open('bigTestResults', 'rb') as f:
+    with open('data/bigTestResults', 'rb') as f:
         df_results = pickle.load(f)
     
     df_results['localPath'] = 'test/' + df_results['fileDirectory'] + df_results['fileName']
@@ -254,9 +254,9 @@ if page==pages[4]:
     st.header('Sélection de configuration')
     
 
-    with open('history0_valLoss.pickle', 'rb') as f:
+    with open('data/history0_valLoss.pickle', 'rb') as f:
         history0 = pickle.load(f)
-    with open('history12_valLoss.pickle', 'rb') as f:
+    with open('data/history12_valLoss.pickle', 'rb') as f:
         history12 = pickle.load(f)
     history12big = [80.67, 61.40, 53.97, 49.64, 47.09, 45.89, 44.51, 43.65, 43.37]
     
@@ -354,7 +354,7 @@ if page==pages[5]:
             - Autres configurations pre-processing/augmentation/modèle
             """)
         with col2:
-            st.image('audioData.jpg', width = 400)
+            st.image('images/audioData.jpg', width = 400)
     
     st.markdown("##")
     
@@ -369,7 +369,7 @@ if page==pages[5]:
                      - Métrique: mesure de la qualité des prédictions
                      """)
         with col2:
-            st.image('MLmetrics.jpg', width = 400)
+            st.image('images/MLmetrics.jpg', width = 400)
 
     st.markdown("##")
     
@@ -380,7 +380,7 @@ if page==pages[5]:
                      - Modèle de langage
                      """)
         with col2:
-            st.image("languageModel.png", width = 400)
+            st.image("images/languageModel.png", width = 400)
   
     st.markdown("##")
   
