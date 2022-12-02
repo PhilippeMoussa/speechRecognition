@@ -12,7 +12,8 @@ import matplotlib
 from matplotlib import pyplot as plt
 import time
 import random
-#import tensorflow as tf
+import tensorflow as tf
+from tensorflow import keras
 
 ### utilitaires pour demo
 
@@ -79,6 +80,146 @@ def randomDisplay(df_results, epoch1, epoch2):
      st.table(getTranscripts(df_results, [rank1, rank2, rank3], epoch1, epoch2))
      
 ### fin des utilitaires pour demo
+
+class audioFile:
+
+    def __init__(self, filename, normalize=False, root_path=""):
+
+        self.audioSignal, self.samplingFrequency = librosa.load(
+            path=filename, sr=None)
+
+        if normalize:
+            average = np.mean(self.audioSignal)
+            std_deviation = np.std(self.audioSignal)
+            self.audioSignal = (self.audioSignal - average)/std_deviation
+
+        self.length = len(self.audioSignal)
+
+    def spectrogram(self, dt=0.025, k_temp=1, k_freq=1):
+
+        spectrogram = np.abs(stft(self.audioSignal, n_fft=int(self.samplingFrequency * dt/k_freq),
+                                  hop_length=int(self.samplingFrequency * dt * k_temp)))
+
+        return spectrogram
+
+    def logMelSpectrogram(self, dt=0.025, k_temp=1, k_freq=1):
+
+        spectrogram = self.spectrogram(dt, k_temp, k_freq)
+        # soit n_fft//2 +1 = (samplingFrequency*dt/k_freq)//2 + 1
+        num_spectrograms_bins = spectrogram.T.shape[-1]
+
+        linear_to_mel_weight_matrix = librosa.filters.mel(
+            sr=self.samplingFrequency,
+            #n_fft=int(dt*self.samplingFrequency) + 1,
+            n_fft=int(dt*self.samplingFrequency/k_freq) + 1,
+            n_mels=num_spectrograms_bins).T
+
+        mel_spectrogram = np.tensordot(
+            spectrogram.T,
+            linear_to_mel_weight_matrix,
+            1)
+
+        return np.log(mel_spectrogram + 1e-6)
+
+    def plotSpectrogram(self, dt=0.025):
+
+        spectrogram = self.spectrogram(dt)
+
+        sns.heatmap(np.rot90(spectrogram.T), cmap='inferno',
+                    vmin=0, vmax=np.max(spectrogram)/3)
+        loc, labels = plt.xticks()
+        l = np.round((loc-loc.min())*self.length /
+                     self.samplingFrequency/loc.max(), 2)
+        plt.xticks(loc, l)
+        loc, labels = plt.yticks()
+        l = np.array(loc[::-1]*self.samplingFrequency/2/loc.max(), dtype=int)
+        plt.yticks(loc, l)
+        plt.xlabel("Time (s)")
+        plt.ylabel("Frequency (Hz)")
+
+    def plotLogMelSpectrogram(self, dt=0.025):
+
+        logMelSpectrogram = self.logMelSpectrogram(dt)
+        sns.heatmap(np.rot90(logMelSpectrogram),
+                    cmap='inferno', vmin=-6)
+        loc, labels = plt.xticks()
+        l = np.round((loc-loc.min())*self.length /
+                     self.samplingFrequency/loc.max(), 2)
+        plt.xticks(loc, l)
+        plt.yticks([])
+        plt.xlabel("Time (s)")
+        plt.ylabel("Frequency (Mel)")
+
+    def normalizeLength(self, duration=1):
+
+        normalizedSamples = duration * self.samplingFrequency
+
+        if self.length >= normalizedSamples:
+            self.audioSignal = self.audioSignal[:int(normalizedSamples)]
+            self.length = normalizedSamples
+
+        else:
+            self.audioSignal = np.concatenate(
+                [self.audioSignal, np.zeros(int(normalizedSamples - self.length))])
+            self.length = normalizedSamples
+        return self
+
+    def addWhiteNoise(self, amplitude=0.05):
+
+        whiteNoise = np.random.normal(
+            0, amplitude*np.max(np.abs(self.audioSignal)), self.length)
+        self.audioSignal = np.array(self.audioSignal + whiteNoise)
+
+        return self
+
+
+alphabet = [chars for chars in " ABCDEFGHIJKLMNOPQRSTUVWXYZ'"]
+character_encoder = keras.layers.StringLookup(
+    vocabulary=alphabet, oov_token="")
+character_decoder = keras.layers.StringLookup(
+    vocabulary=character_encoder.get_vocabulary(), oov_token="", invert=True)
+
+
+def decode_batch_predictions(pred):
+
+    input_len = np.ones(pred.shape[0]) * pred.shape[1]
+
+    # Greedy search : décodage le plus rapide, ne mène pas forcément au texte le plus probable
+    results = keras.backend.ctc_decode(
+        pred, input_length=input_len, greedy=True)[0][0]
+
+    # on itère sur la prédiction et on récupère le texte
+    output_text = []
+    for result in results:
+        result = tf.strings.reduce_join(
+            character_decoder(result)).numpy().decode("utf-8")
+        output_text.append(result)
+    return output_text
+
+
+def CTC_loss(y_test, y_pred):
+
+    batch_len = tf.cast(tf.shape(y_test)[0], dtype="int64")
+    input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
+    label_length = tf.cast(tf.shape(y_test)[1], dtype="int64")
+
+    input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+    label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+
+    loss = keras.backend.ctc_batch_cost(
+        y_test, y_pred, input_length, label_length)
+
+    return loss
+
+
+def predict(model, filePath):
+    logMelSpectrogram = audioFile(filePath, normalize=True).subsample(3).normalizeLength(17) \
+        .logMelSpectrogram(k_temp=.7, k_freq=1.5)
+    logMelSpectrogram = np.array([(logMelSpectrogram)])
+    pred = "prediction: " + \
+        decode_batch_predictions(model.predict(logMelSpectrogram))[0]
+    st.write(pred)
+    return
 
 
 
@@ -319,7 +460,40 @@ if page==pages[4]:
                                default = ['5', '9'], max_selections = 2)          
     st.button("random select", on_click = 
               randomDisplay(df_results, selection[0], selection[1]))
-   
+
+    with st.expander("Tests"):
+        st.write("""Auto-test de notre modèle!""")
+
+        custom_objects = {"CTC_loss": CTC_loss}
+        with keras.utils.custom_object_scope(custom_objects):
+            model5 = keras.models.load_model('model/model.h5')
+
+        file_dic = {"Sample 1": "samples/proud.m4a",
+                    "Sample 2": "samples/learn.m4a", }
+
+        option = st.selectbox(
+            "Sélectionnez un fichier audio à transcrire", ("Sample 1", "Sample 2"))
+
+        wav_file = file_dic[option]
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if wav_file:
+                st.audio(wav_file)
+        with col2:
+            if wav_file:
+                if st.button("predict"):
+                    predict(model5, filePath=wav_file)
+
+
+
+
+
+
+
+
+
+
 if page==pages[5]:
     
     st.title('Conclusion ')
