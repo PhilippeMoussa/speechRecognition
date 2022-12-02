@@ -194,18 +194,18 @@ if page==pages[2]:
     with col3:
         output = st.checkbox('output')
         
-    st.image('images/model0.jpg', width = 400)
+    st.image('images/model0.jpg', width = 800)
     
     placeholder1 = st.empty()
     placeholder2 = st.empty()
     placeholder3 = st.empty()
     
     if couchesConvolution:
-        st.image('images/model1.jpg', width = 400)
+        st.image('images/model1.jpg', width = 800)
     if couchesRNN:
-        st.image('images/model2.jpg', width = 400)
+        st.image('images/model2.jpg', width = 800)
     if output:
-        st.image('images/model3.jpg', width = 400)
+        st.image('images/model3.jpg', width = 800)
 
 
 if page==pages[3]:
@@ -225,7 +225,7 @@ if page==pages[3]:
     
     st.write("\n")
 
-    st.image('images/pipeline0.jpg', width = 400)
+    st.image('images/pipeline0.jpg', width = 800)
     
     placeholder1 = st.empty()
     placeholder2 = st.empty()
