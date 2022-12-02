@@ -96,20 +96,20 @@ if page==pages[0]:
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
-        alignement = st.checkbox("alignement")
+        alignement = st.checkbox("alignment")
         if alignement:
-            st.write("- Plutôt que de prédire 'le' bon alignement...")
+            st.write("- Instead of predicting 'the' right aligment...")
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
         
-        CTC = st.checkbox("CTC: principe")     
+        CTC = st.checkbox("CTC: principle")     
         if CTC:
             st.write("""
-                     - ...Assigner une probabilité à chaque caractère par time-step
-                     - Maximiser la probabilité des alignements compatibles avec la transcription
-                     - Une contrainte: longueur de prédiction inférieure ou égale au nombre de time-steps
+                     - ...assign a probability to each alphabet's character per time-step 
+                     - Maximize the probability of all alignments consistent with the label targeted
+                     - One constraint: predictions' length are capped by the the number of time-steps
                      """)
     
     with col2:
@@ -129,16 +129,16 @@ if page==pages[0]:
     
 if page==pages[1]:
     
-    st.title('Exploration du dataset')
-    st.header('Dataset LibriSpeech - langue anglaise')    
+    st.title('Dataset exploration')
+    st.header('LibriSpeech extract - English')    
     
     st.write("""
-             Nous disposons de plus de 30 000 enregistrements audio (7 Go / 100h) en langue anglaise 
-             et de leurs transcriptions. Il nous faut :
+             We will work on 30+ k (7 Go / 100h) of records and their transcripts.
+             To begin with, we need to :
                  
-            - normaliser la durée des enregistrements
+            - normalize the audio duration
             
-            - maintenir la compatibilité entre la longueur des étiquettes et la résolution temporelle utilisée
+            - ensure consistency between transcript's length and our choice of time-step
              """)
     
     with open('data/train_metadata_full', 'rb') as f:
@@ -182,17 +182,17 @@ if page==pages[1]:
 
 if page==pages[2]:
     
-    st.title('Modèle')
-    st.subheader("Structure dérivée de Deep Speech 2")
+    st.title('Model')
+    st.subheader("Structure derived from Deep Speech 2")
     
     st.markdown("##")
     
     col1, col2, col3 = st.columns(3)
 
     with col1:    
-        couchesConvolution = st.checkbox('Couches convolution')
+        couchesConvolution = st.checkbox('Convlutional layers')
     with col2:
-        couchesRNN = st.checkbox('Couches RNN')
+        couchesRNN = st.checkbox('RNN layers')
     with col3:
         output = st.checkbox('output')
         
@@ -212,7 +212,7 @@ if page==pages[2]:
 
 if page==pages[3]:
     
-    st.title('Pipeline de données')
+    st.title('Data pipeline')
 
     st.markdown("##")
     
@@ -223,7 +223,7 @@ if page==pages[3]:
     with col2:
         augmentation = st.checkbox('Augmentation')
     with col3:
-        modele = st.checkbox('Modèle')
+        modele = st.checkbox('Model')
     
     st.write("\n")
 
@@ -250,9 +250,9 @@ if page==pages[4]:
     
     df_results['localPath'] = 'test/' + df_results['fileDirectory'] + df_results['fileName']
     
-    st.title('Résultats')
+    st.title('Results')
     
-    st.header('Sélection de configuration')
+    st.header('Selecting our champion')
     
 
     with open('data/history0_valLoss.pickle', 'rb') as f:
@@ -265,12 +265,10 @@ if page==pages[4]:
     
     with st.expander("CTC loss  / Précision"):
     
-        st.write("""A partir d'une configuration de base, 
-                 nous avons testé plusieurs options en boucle courte: 
-                 12 epochs, 800 train / 200 test.
-                 Puis le 'champion' ainsi sélectionné a été entraîné
-                 sur 9 epochs, 28 000 train / 2500 test.
-                 Nous appliquons enfin une métrique basée sur la distance de Levenshtein.
+        st.write("""Starting from a baseline, we tried several options on 
+                 12 epochs, 800 train / 200 test samples (approx 1h under Colab premium GPU).
+                 Then our champion was trained on 9 epochs over 28 000 train / 2500 test samples.
+                 Finally, we use Levenshtein's distance to measure accuracy.
                  """)
         
         col1, col2, col3, col4 = st.columns(4, gap = "small")
@@ -308,18 +306,15 @@ if page==pages[4]:
             plt.legend(fontsize = 10)
             plt.xlabel('epochs')
             plt.ylabel('accuracy')
-            plt.title('Precision on validation data', fontsize = 10)
+            plt.title('Accuracy on validation data', fontsize = 10)
             st.pyplot(fig)
 
-    st.header('Prédictions sur données de validation')
+    st.header('Predictions on validation dataset')
     st.write("""
-             Et voici les prédictions de notre 'champion' après un entraînement long!
-             \nNous les affichons par groupe de trois enregistrements, avec leurs labels, 
-             sélectionnés aléatoirement
-             dans notre dataset de validation (2500 enregistrements).
-             \nVous pouvez comparer les résultats obtenus à deux epochs différents.
-             \nEn sélectionnant 9 et 9_2, vous pouvez aussi comparer les prédictions de l'epoch 9,
-             décodées en mode "greedy' (9) ou avec un "ctc beam search" (9_2).
+             And here are the predictions of our fully trained champion!
+             \nWe display them by groups of 3, randomly selected within our 2500 samples validation dataset.
+             \nYou can compare 2 different epoch's predictions: last one's not always the best
+             \n9 vs 9_2 show epoch 9 with greedy decoding (as all others) vs beam search decoding. 
              """)
     epochs = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '9_2']
     selection = st.multiselect("select 2 epochs displayed", epochs, 
@@ -329,16 +324,15 @@ if page==pages[4]:
    
 if page==pages[5]:
     
-    st.title('Conclusion et perspectives')
+    st.title('Conclusion ')
 
     st.markdown("###")
     st.write("""
-             Tous nos remerciements à DataScientest et plus particulièrement à 
-             notre chef de cohorte Romain Godet et à notre mentor Paul Lestrat!
+             Our thanks to DataScientest and our mentor Paul Lestrat!
              """)
     st.markdown("###")
 
-    st.header("Quelques pistes")
+    st.header("A few follow-up ideas")
 
     st.markdown("###")
 
@@ -347,12 +341,12 @@ if page==pages[5]:
         with col1:
             st.markdown("#")
             st.write("""
-            - (Beaucoup) plus de données d'entraînement
-                - Deep Speech 2: plus de 11 000h audio! 
-            - Autres augmentations de données:
+            - (Much) more training data
+                - Deep Speech 2: 11 000h records! 
+            - Other data augmentation
                 - stretching, pitch shifting
-                - autres bruits
-            - Autres configurations pre-processing/augmentation/modèle
+                - real life noises
+            - Other configurations pre-processing/augmentation/model
             """)
         with col2:
             st.image('images/audioData.jpg', width = 400)
@@ -366,8 +360,8 @@ if page==pages[5]:
             st.markdown("#")
             st.markdown("#")
             st.write("""
-                     - Meilleur décodage des prédictions
-                     - Métrique: mesure de la qualité des prédictions
+                     - Improve decoding of predictions
+                     - Metric: move on to word error rate 
                      """)
         with col2:
             st.image('images/MLmetrics.jpg', width = 400)
@@ -378,7 +372,7 @@ if page==pages[5]:
         col1, col2 = st.columns(2)
         with col1:
             st.write("""
-                     - Modèle de langage
+                     - Language model: lexicon, n-grams
                      """)
         with col2:
             st.image("images/languageModel.png", width = 400)
