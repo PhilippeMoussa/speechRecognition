@@ -11,6 +11,7 @@ import pickle
 import matplotlib
 from matplotlib import pyplot as plt
 import librosa
+from librosa import stft
 import numpy as np
 import time
 import random
