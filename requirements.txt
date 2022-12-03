@@ -3,5 +3,3 @@ pandas
 matplotlib
 tensorflow
 librosa
-ffmpeg
-libsndfile1-dev
