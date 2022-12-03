@@ -4,4 +4,4 @@ matplotlib
 tensorflow
 librosa
 ffmpeg
-#pysoundfile
+libsndfile1-dev
