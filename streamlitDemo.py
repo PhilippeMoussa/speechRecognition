@@ -92,7 +92,7 @@ def normalizeSignalLength(audioSignal, duration, freq):
     if len(audioSignal) > nbSamples:
         audioSignal = audioSignal[:nbSamples]
     if len(audioSignal) < nbSamples:
-        audioSignal = np.concatenate(audioSignal, np.zeros(int(nbSamples -len(audioSignal))))
+        audioSignal = np.concatenate((audioSignal, np.zeros(int(nbSamples -len(audioSignal)))))
     return audioSignal
 
 
