@@ -529,6 +529,11 @@ if page==pages[5]:
     with keras.utils.custom_object_scope(custom_objects):
         model5 = keras.models.load_model('model/model.h5')
     
+
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    build_dir = os.path.join(parent_dir, "st_audiorec/frontend/build")
+    st_audiorec = components.declare_component("st_audiorec", path=build_dir)
+
     val = st_audiorec()
     # web component returns arraybuffer from WAV-blob
     st.write('Audio data received in the Python backend will appear below this message ...')
