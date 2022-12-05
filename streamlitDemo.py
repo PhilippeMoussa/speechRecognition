@@ -551,7 +551,7 @@ if page==pages[5]:
         # display audio data as received on the Python side
         #st.audio(wav_bytes, format='audio/wav')
 
-        audioSignal = np.frombuffer(stream.getbuffer(), dtype = "int32")
+        audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
         signalPredict(model5, audioSignal, 16000, 17)
 
 
