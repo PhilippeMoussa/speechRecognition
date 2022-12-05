@@ -121,7 +121,8 @@ def signalLogMelSpectrogram(audioSignal, freq = 16000, dt = 0.025, k_temp = 1, k
     return np.log(mel_spectrogram + 1e-6)
 
 def signalPredict(model, audioSignal, freq, duration):
-    logMel = signalLogMelSpectrogram(audioSignal, freq = freq, k_temp = .7 , k_freq = 1.5)
+    normalizedAudioSignal = normalizeSignalLength(audioSignal, duration = duration, freq = freq)
+    logMel = signalLogMelSpectrogram(normalizedAudioSignal, freq = freq, k_temp = .7 , k_freq = 1.5)
     logMel = np.array([(logMel)])
     print(decode_batch_predictions(model.predict(logMel))[0])
      
@@ -562,10 +563,7 @@ if page==pages[5]:
         #st.audio(wav_bytes, format='audio/wav')
 
         audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
-        audioSignal = normalizeSignalLength(audioSignal, 17, 16000)
         signalPredict(model5, audioSignal, 16000, 17)
-
-
 
 
 
