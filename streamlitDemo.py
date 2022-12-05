@@ -526,8 +526,8 @@ if page==pages[5]:
     st.title('Try for yourself')
 
     custom_objects = {"CTC_loss": CTC_loss}
-        with keras.utils.custom_object_scope(custom_objects):
-            model5 = keras.models.load_model('model/model.h5')
+    with keras.utils.custom_object_scope(custom_objects):
+        model5 = keras.models.load_model('model/model.h5')
     
     val = st_audiorec()
     # web component returns arraybuffer from WAV-blob
