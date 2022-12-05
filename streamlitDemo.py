@@ -17,6 +17,10 @@ import time
 import random
 import tensorflow as tf
 from tensorflow import keras
+import os
+from io import BytesIO
+import streamlit.components.v1 as components
+
 
 ### utilitaires pour demo
 
@@ -227,7 +231,7 @@ def predict(model, filePath):
 
 
 pages = ["CTC loss", "Dataset exploration", "Model", "Pipeline", 
-         "Results", "Conclusion"]
+         "Results", "Demo", "Conclusion"]
 
 page = st.sidebar.radio("navigate", pages)
 
@@ -489,15 +493,29 @@ if page==pages[4]:
                     predict(model5, filePath=wav_file)
 
 
-
-
-
-
-
-
-
-
 if page==pages[5]:
+    st.title('Try for yourself')
+    
+    val = st_audiorec()
+    # web component returns arraybuffer from WAV-blob
+    st.write('Audio data received in the Python backend will appear below this message ...')
+
+    if isinstance(val, dict):  # retrieve audio data
+        with st.spinner('retrieving audio-recording...'):
+            ind, val = zip(*val['arr'].items())
+            ind = np.array(ind, dtype=int)  # convert to np array
+            val = np.array(val)             # convert to np array
+            sorted_ints = val[ind]
+            stream = BytesIO(b"".join([int(v).to_bytes(1, "big") for v in sorted_ints]))
+            wav_bytes = stream.read()
+
+        # wav_bytes contains audio data in format to be further processed
+        # display audio data as received on the Python side
+        st.audio(wav_bytes, format='audio/wav')
+
+
+
+if page==pages[6]:
     
     st.title('Conclusion ')
 
