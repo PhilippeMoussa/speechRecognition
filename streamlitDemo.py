@@ -124,7 +124,7 @@ def signalPredict(model, audioSignal, freq, duration):
     normalizedAudioSignal = normalizeSignalLength(audioSignal, duration = duration, freq = freq)
     logMel = signalLogMelSpectrogram(normalizedAudioSignal, freq = freq, k_temp = .7 , k_freq = 1.5)
     logMel = np.array([(logMel)])
-    print(decode_batch_predictions(model.predict(logMel))[0])
+    st.write(decode_batch_predictions(model.predict(logMel))[0])
      
 ### fin des utilitaires pour demo
 
