@@ -87,6 +87,13 @@ def randomDisplay(df_results, epoch1, epoch2):
      st.table(getTranscripts(df_results, [rank1, rank2, rank3], epoch1, epoch2))
 
 
+def subsample(audioSignal, factor):
+    outputSignal = [audioSignal[factor*k] for k in np.arange(0, int(len(audioSignal)/factor))]
+    average = np.mean(outputSignal)
+    std_deviation = np.std(outputSignal)
+    outputSignal = (outputSignal-average)/std_deviation
+    return outputSignal
+
 def normalizeSignalLength(audioSignal, duration, freq):
     nbSamples = int(freq * duration)
     if len(audioSignal) > nbSamples:
@@ -94,7 +101,6 @@ def normalizeSignalLength(audioSignal, duration, freq):
     if len(audioSignal) < nbSamples:
         audioSignal = np.concatenate((audioSignal, np.zeros(int(nbSamples -len(audioSignal)))))
     return audioSignal
-
 
 def signalSpectrogram(audioSignal, freq = 16000, dt=0.025, k_temp = 1, k_freq = 1):
 
@@ -121,7 +127,8 @@ def signalLogMelSpectrogram(audioSignal, freq = 16000, dt = 0.025, k_temp = 1, k
     return np.log(mel_spectrogram + 1e-6)
 
 def signalPredict(model, audioSignal, freq, duration):
-    normalizedAudioSignal = normalizeSignalLength(audioSignal, duration = duration, freq = freq)
+    signal = subsample(audioSignal, factor = 3)
+    normalizedAudioSignal = normalizeSignalLength(signal, duration = duration, freq = freq)
     logMel = signalLogMelSpectrogram(normalizedAudioSignal, freq = freq, k_temp = .7 , k_freq = 1.5)
     logMel = np.array([(logMel)])
     st.write(decode_batch_predictions(model.predict(logMel))[0])
