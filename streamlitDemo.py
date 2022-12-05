@@ -85,6 +85,35 @@ def randomDisplay(df_results, epoch1, epoch2):
         st.audio(df_results['localPath'].values[rank3])
      
      st.table(getTranscripts(df_results, [rank1, rank2, rank3], epoch1, epoch2))
+
+def signalSpectrogram(audioSignal, freq = 16000, dt=0.025, k_temp = 1, k_freq = 1):
+
+  spectro = np.abs(stft(audioSignal, n_fft = int(freq * dt/k_freq), 
+                       hop_length = int(freq * dt * k_temp)))
+
+  return spectro
+  
+def signalLogMelSpectrogram(audioSignal, freq = 16000, dt = 0.025, k_temp = 1, k_freq = 1):
+   
+    spectrogram = signalSpectrogram(audioSignal, dt = dt, freq = freq, k_temp = k_temp, k_freq = k_freq)
+    num_spectrograms_bins = spectrogram.T.shape[-1] #soit n_fft//2 +1 = (samplingFrequency*dt/k_freq)//2 + 1
+    
+    linear_to_mel_weight_matrix = librosa.filters.mel(
+        sr = freq,
+        n_fft=int(dt*freq/k_freq) + 1,
+        n_mels=num_spectrograms_bins).T
+
+    mel_spectrogram = np.tensordot(
+        spectrogram.T,
+        linear_to_mel_weight_matrix,
+        1)
+
+    return np.log(mel_spectrogram + 1e-6)
+
+def signalPredict(model, audioSignal, freq, duration):
+    logMel = signalLogMelSpectrogram(audioSignal, freq = freq, k_temp = .7 , k_freq = 1.5)
+    logMel = np.array([(logMel)])
+    print(decode_batch_predictions(model.predict(logMel))[0])
      
 ### fin des utilitaires pour demo
 
@@ -495,6 +524,10 @@ if page==pages[4]:
 
 if page==pages[5]:
     st.title('Try for yourself')
+
+    custom_objects = {"CTC_loss": CTC_loss}
+        with keras.utils.custom_object_scope(custom_objects):
+            model5 = keras.models.load_model('model/model.h5')
     
     val = st_audiorec()
     # web component returns arraybuffer from WAV-blob
@@ -511,7 +544,12 @@ if page==pages[5]:
 
         # wav_bytes contains audio data in format to be further processed
         # display audio data as received on the Python side
-        st.audio(wav_bytes, format='audio/wav')
+        #st.audio(wav_bytes, format='audio/wav')
+
+        audioSignal = np.frombuffer(stream.getbuffer(), dtype = "int32")
+        signalPredict(model5, audioSignal, 16000, 17)
+
+
 
 
 
