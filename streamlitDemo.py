@@ -86,6 +86,16 @@ def randomDisplay(df_results, epoch1, epoch2):
      
      st.table(getTranscripts(df_results, [rank1, rank2, rank3], epoch1, epoch2))
 
+
+def normalizeSignalLength(audioSignal, duration, freq):
+    nbSamples = int(freq * duration)
+    if len(audioSignal) > nbSamples:
+        audioSignal = audioSignal[:nbSamples]
+    if len(audioSignal) < nbSamples:
+        audioSignal = np.concatenate(audioSignal, np.zeros(int(nbSamples -len(audioSignal))))
+    return audioSignal
+
+
 def signalSpectrogram(audioSignal, freq = 16000, dt=0.025, k_temp = 1, k_freq = 1):
 
   spectro = np.abs(stft(audioSignal, n_fft = int(freq * dt/k_freq), 
@@ -552,6 +562,7 @@ if page==pages[5]:
         #st.audio(wav_bytes, format='audio/wav')
 
         audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
+        audioSignal = normalizeSignalLength(audioSignal, 17, 16000)
         signalPredict(model5, audioSignal, 16000, 17)
 
 
