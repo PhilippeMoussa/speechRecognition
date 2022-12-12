@@ -182,7 +182,6 @@ if page==pages[0]:
     st.title('Speech Recognition')
     st.write("Try for yourself and laugh at the model's efforts to transcribe what you said.")
     st.write("It's far from perfect but it's a homemade, end-to-end model. Not some pre-trained thing!")
-    st.write("ChatGPT, we're coming for you.")
     st.write("Credit to [stefanrmmr](https://github.com/stefanrmmr/streamlit_audio_recorder) for the streamlit audio recorder")
      
     model5 = loadModel()
@@ -257,9 +256,9 @@ if page==pages[2]:
     
     st.title('Dataset')
 
-    st.write('We used a (too) small extract of the [LibriSpeech ASR corpus](https://www.openslr.org/12) to train our model:')    
     st.write("""
-             working on 30+ k (7 Go / 100+ h) of audio records and their transcriptions, we just had to:                        
+            We used a (too) small extract of the [LibriSpeech ASR corpus](https://www.openslr.org/12) to train our model.
+            Working on 30+ k (7 Go / 100+ h) of audio records and their transcriptions, we just had to:                        
             - normalize the audio duration            
             - maintain consistency between the length of transcriptions and our choice of time-step
              """)
@@ -278,9 +277,9 @@ if page==pages[2]:
     
     with col2:
         maxDuration = st.slider("duration (s)", min_value = 0.0, max_value = 25.0, 
-                            step = .1, value = 10.0)
+                            step = .1, value = 17.0)
         timeStep = st.slider("time step (ms)", min_value = 0.0, max_value = 30.0, step = .5, 
-                         value = 30.0)
+                         value = 25.0)
 
     with col1:
        
