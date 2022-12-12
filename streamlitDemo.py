@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
-"""
 
 import streamlit as st
 st.set_page_config(layout="wide")
@@ -22,8 +19,7 @@ from io import BytesIO
 import streamlit.components.v1 as components
 
 
-### utilitaires pour demo
-
+### utilities for demo
 
 def random3():
     return [int(2500*random.random()), 
@@ -36,7 +32,6 @@ def getTranscripts(df_results, ranks, epoch1, epoch2):
     header1_d = header1 + '_d'
     header2 = 'v12big_' + epoch2
     header2_d = header2 + '_d'
-
     
     df = pd.DataFrame()
     
@@ -58,7 +53,6 @@ def getTranscripts(df_results, ranks, epoch1, epoch2):
     score3_2 = str(round(df_results[header2_d].values[ranks[2]],2))
     pred3_2 = df_results[header2].values[ranks[2]]
     
-    
     df['Sample'] = ['Audio1', 'Audio2', 'Audio3']
     df['Labels'] = [label1, label2, label3]
     df['Predictions epoch ' + epoch1] = [pred1_1, pred2_1, pred3_1]
@@ -71,7 +65,7 @@ def getTranscripts(df_results, ranks, epoch1, epoch2):
 def randomDisplay(df_results, epoch1, epoch2):
      
      rank1, rank2, rank3 = random3()
-     
+    
      col1, col2, col3 = st.columns(3)
      
      with col1:
@@ -103,10 +97,8 @@ def normalizeSignalLength(audioSignal, duration, freq):
     return audioSignal
 
 def signalSpectrogram(audioSignal, freq = 16000, dt=0.025, k_temp = 1, k_freq = 1):
-
   spectro = np.abs(stft(audioSignal, n_fft = int(freq * dt/k_freq), 
                        hop_length = int(freq * dt * k_temp)))
-
   return spectro
   
 def signalLogMelSpectrogram(audioSignal, freq = 16000, dt = 0.025, k_temp = 1, k_freq = 1):
@@ -133,116 +125,22 @@ def signalPredict(model, audioSignal, freq, duration):
     logMel = np.array([(logMel)])
     st.write(decode_batch_predictions(model.predict(logMel))[0])
      
-### fin des utilitaires pour demo
-
-class audioFile:
-
-    def __init__(self, filename, normalize=False, root_path="", sr = 16000):
-
-        self.audioSignal, self.samplingFrequency = librosa.load(
-            path=filename, sr=sr)
-
-        if normalize:
-            average = np.mean(self.audioSignal)
-            std_deviation = np.std(self.audioSignal)
-            self.audioSignal = (self.audioSignal - average)/std_deviation
-
-        self.length = len(self.audioSignal)
-
-    def spectrogram(self, dt=0.025, k_temp=1, k_freq=1):
-
-        spectrogram = np.abs(stft(self.audioSignal, n_fft=int(self.samplingFrequency * dt/k_freq),
-                                  hop_length=int(self.samplingFrequency * dt * k_temp)))
-
-        return spectrogram
-
-    def logMelSpectrogram(self, dt=0.025, k_temp=1, k_freq=1):
-
-        spectrogram = self.spectrogram(dt, k_temp, k_freq)
-        # soit n_fft//2 +1 = (samplingFrequency*dt/k_freq)//2 + 1
-        num_spectrograms_bins = spectrogram.T.shape[-1]
-
-        linear_to_mel_weight_matrix = librosa.filters.mel(
-            sr=self.samplingFrequency,
-            #n_fft=int(dt*self.samplingFrequency) + 1,
-            n_fft=int(dt*self.samplingFrequency/k_freq) + 1,
-            n_mels=num_spectrograms_bins).T
-
-        mel_spectrogram = np.tensordot(
-            spectrogram.T,
-            linear_to_mel_weight_matrix,
-            1)
-
-        return np.log(mel_spectrogram + 1e-6)
-
-    def plotSpectrogram(self, dt=0.025):
-
-        spectrogram = self.spectrogram(dt)
-
-        sns.heatmap(np.rot90(spectrogram.T), cmap='inferno',
-                    vmin=0, vmax=np.max(spectrogram)/3)
-        loc, labels = plt.xticks()
-        l = np.round((loc-loc.min())*self.length /
-                     self.samplingFrequency/loc.max(), 2)
-        plt.xticks(loc, l)
-        loc, labels = plt.yticks()
-        l = np.array(loc[::-1]*self.samplingFrequency/2/loc.max(), dtype=int)
-        plt.yticks(loc, l)
-        plt.xlabel("Time (s)")
-        plt.ylabel("Frequency (Hz)")
-
-    def plotLogMelSpectrogram(self, dt=0.025):
-
-        logMelSpectrogram = self.logMelSpectrogram(dt)
-        sns.heatmap(np.rot90(logMelSpectrogram),
-                    cmap='inferno', vmin=-6)
-        loc, labels = plt.xticks()
-        l = np.round((loc-loc.min())*self.length /
-                     self.samplingFrequency/loc.max(), 2)
-        plt.xticks(loc, l)
-        plt.yticks([])
-        plt.xlabel("Time (s)")
-        plt.ylabel("Frequency (Mel)")
-
-    def normalizeLength(self, duration=1):
-
-        normalizedSamples = duration * self.samplingFrequency
-
-        if self.length >= normalizedSamples:
-            self.audioSignal = self.audioSignal[:int(normalizedSamples)]
-            self.length = normalizedSamples
-
-        else:
-            self.audioSignal = np.concatenate(
-                [self.audioSignal, np.zeros(int(normalizedSamples - self.length))])
-            self.length = normalizedSamples
-        return self
-
-    def addWhiteNoise(self, amplitude=0.05):
-
-        whiteNoise = np.random.normal(
-            0, amplitude*np.max(np.abs(self.audioSignal)), self.length)
-        self.audioSignal = np.array(self.audioSignal + whiteNoise)
-
-        return self
-
-
+### end of utilities for demo
+ 
 alphabet = [chars for chars in " ABCDEFGHIJKLMNOPQRSTUVWXYZ'"]
 character_encoder = keras.layers.StringLookup(
     vocabulary=alphabet, oov_token="")
 character_decoder = keras.layers.StringLookup(
     vocabulary=character_encoder.get_vocabulary(), oov_token="", invert=True)
 
-
 def decode_batch_predictions(pred):
 
     input_len = np.ones(pred.shape[0]) * pred.shape[1]
 
-    # Greedy search : décodage le plus rapide, ne mène pas forcément au texte le plus probable
+    # Greedy search : fastest, but might be sub-optimal
     results = keras.backend.ctc_decode(
         pred, input_length=input_len, greedy=True)[0][0]
 
-    # on itère sur la prédiction et on récupère le texte
     output_text = []
     for result in results:
         result = tf.strings.reduce_join(
@@ -264,17 +162,6 @@ def CTC_loss(y_test, y_pred):
         y_test, y_pred, input_length, label_length)
 
     return loss
-
-
-def predict(model, filePath):
-    logMelSpectrogram = audioFile(filePath, normalize=True, sr=16000).normalizeLength(17) \
-        .logMelSpectrogram(k_temp=.7, k_freq=1.5)
-    logMelSpectrogram = np.array([(logMelSpectrogram)])
-    pred = "prediction: " + \
-        decode_batch_predictions(model.predict(logMelSpectrogram))[0]
-    st.write(pred)
-    return
-
 
 
 pages = ["Demo", "CTC algorithm", "Dataset", "Model", "Results"]
@@ -314,9 +201,6 @@ if page==pages[0]:
 
         audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
         signalPredict(model5, audioSignal, 16000, 17)
-
-
-
 
 
 if page==pages[1]:
@@ -403,13 +287,11 @@ if page==pages[2]:
         plt.xlim(left = 0, right = 35)
         plt.ylim(bottom = 0, top = 530)
     
-    
         plt.vlines(x=maxDuration, ymin = 0, ymax = 530, colors = 'black')
         plt.hlines(y=maxDuration/(.001*timeStep)/2, xmin = 0, xmax = 35, colors = 'black')
         plt.xlabel('audio duration (s)', fontsize = 12)
         plt.ylabel('label length (nb char)', fontsize = 12)
         plt.title('Label length vs audio duration', fontsize = 18);
-        
         
         plt.xlabel('audio duration (s)', fontsize = 12)
         plt.ylabel('label length (nb char)', fontsize = 12)
@@ -453,10 +335,8 @@ if page==pages[4]:
     df_results['localPath'] = 'test/' + df_results['fileDirectory'] + df_results['fileName']
     
     st.title('Results')
-    
     st.header('Selecting our champion')
     
-
     with open('data/history0_valLoss.pickle', 'rb') as f:
         history0 = pickle.load(f)
     with open('data/history12_valLoss.pickle', 'rb') as f:
