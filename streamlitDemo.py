@@ -332,7 +332,9 @@ if page==pages[1]:
             st.write("- We have audio records, and their transcriptions, but no way to align both...")
         st.markdown('#')
         st.markdown('#')
-        
+        st.markdown('#')
+      
+
         CTC = st.checkbox("A solution: CTC algorithm")     
         if CTC:
             st.write("""
