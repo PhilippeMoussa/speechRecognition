@@ -1,20 +1,16 @@
 # spych
  
-This is a super simple, step-by-step deep learning project on speech recognition.
+A beginner friendly, step-by-step deep learning project on speech recognition.
 
-Demo here: https://philippemoussa-speechrecognition-streamlitdemo-bw9nml.streamlit.app/
+Demo [here](https://philippemoussa-speechrecognition-streamlitdemo-bw9nml.streamlit.app/), hope you will like it!
 
-Hope you will like it!
+Dataset: [LibriSpeech ASR Corpus](http://www.openslr.org/12/)
 
-Main sources:
+Key references :
 
-Dataset: LibriSpeech ASR Corpus: http://www.openslr.org/12/
-
-Introduction to CTC algorithm https://distill.pub/2017/ctc/
+[Introduction to CTC algorithm](https://distill.pub/2017/ctc/)
 
 DeepSpeech2 :
-- Initial publication : https://arxiv.org/abs/1512.02595
-- Implementation examples:  
-https://nvidia.github.io/OpenSeq2Seq/html/speech-recognition/deepspeech2.html
-https://keras.io/examples/audio/ctc_asr/
+- [Initial publication](https://arxiv.org/abs/1512.02595)
+- [Implementation example](https://keras.io/examples/audio/ctc_asr/)
 
