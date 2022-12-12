@@ -125,7 +125,6 @@ def signalPredict(model, audioSignal, freq, duration):
     logMel = np.array([(logMel)])
     st.write(decode_batch_predictions(model.predict(logMel))[0])
      
-### end of utilities for demo
  
 alphabet = [chars for chars in " ABCDEFGHIJKLMNOPQRSTUVWXYZ'"]
 character_encoder = keras.layers.StringLookup(
@@ -170,9 +169,14 @@ def loadModel():
         model = keras.models.load_model('model/model.h5')
         return model
 
+### end of utilities for demo
+
+
 pages = ["Demo", "CTC algorithm", "Dataset", "Model", "Results"]
 
 page = st.sidebar.radio("navigate", pages)
+st.sidebar.write("2022 Data science bootcamp - [Datascientest](https://datascientest.com/)")
+st.sidebar.write("[GitHub](https://github.com/PhilippeMoussa/speechRecognition)")
 
 if page==pages[0]:
     st.title('Speech Recognition')
@@ -406,8 +410,3 @@ if page==pages[4]:
                                default = ['5', '9'], max_selections = 2)          
     st.button("random select", on_click = 
               randomDisplay(df_results, selection[0], selection[1]))
-
-
-
-
-
