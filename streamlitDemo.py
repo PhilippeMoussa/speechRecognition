@@ -277,7 +277,7 @@ def predict(model, filePath):
 
 
 
-pages = ["Demo", "CTC loss", "Dataset", "Model", "Results"]
+pages = ["Demo", "CTC algorithm", "Dataset", "Model", "Results"]
 
 page = st.sidebar.radio("navigate", pages)
 
@@ -320,7 +320,7 @@ if page==pages[0]:
 
 
 if page==pages[1]:
-    st.title("CTC loss")
+    st.title("CTC algorithm")
 
     col1, col2 = st.columns([3, 6])
     
@@ -330,18 +330,21 @@ if page==pages[1]:
         st.markdown('#')
         alignement = st.checkbox("alignment")
         if alignement:
-            st.write("- Instead of predicting 'the' right aligment...")
+            st.write("- We have audio records, and their transcriptions, but no way to align both...")
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
         
-        CTC = st.checkbox("CTC: principle")     
+        CTC = st.checkbox("CTC algorithm: principle")     
         if CTC:
             st.write("""
-                     - ...assign a probability to each alphabet's character per time-step 
+                     - Assign a probability to each alphabet's character per time-step 
                      - Maximize the probability of all alignments consistent with the label targeted
                      - One constraint: predictions' length are capped by the the number of time-steps
+                     
+                     [Here](https://distill.pub/2017/ctc/) is a much better explantion.
+                     And [here](https://www.cs.toronto.edu/~graves/icml_2006.pdf) is the original paper on CTC algorithm.
                      """)
     
     with col2:
@@ -361,8 +364,9 @@ if page==pages[1]:
     
 if page==pages[2]:
     
-    st.title('Dataset exploration')
-    st.header('LibriSpeech extract - English')    
+    st.title('Dataset')
+
+    st.write('We used a (too) small extract of the [LibriSpeech ASR corpus](https://www.openslr.org/12) to train our model')    
     
     st.write("""
              Working on 30+ k (7 Go / 100+ h) of records and their transcripts, we need to:
@@ -414,7 +418,8 @@ if page==pages[2]:
 if page==pages[3]:
     
     st.title('Model')
-    st.subheader("Building on a structure derived from Deep Speech 2 ")
+    st.write("We used a structure directly derived from [Deep Speech 2](https://arxiv.org/abs/1512.02595)")
+    st.write("And we could never have made it without [this invaluable resource](https://keras.io/examples/audio/ctc_asr/) ")
     st.markdown("##")
     
     col1, col2, col3 = st.columns(3)
