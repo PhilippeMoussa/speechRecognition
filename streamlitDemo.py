@@ -287,7 +287,7 @@ if page==pages[0]:
     st.write("It's far from perfect but it's a homemade, end-to-end model. Not some pre-trained thing!")
     st.write("ChatGPT, we're coming for you")
     st.write("Streamlit audio recorder: credit to [stefanrmmr] (https://github.com/stefanrmmr/streamlit_audio_recorder)")
-
+    st.write("check out this [link](https://share.streamlit.io/mesmith027/streamlit_webapps/main/MC_pi/streamlit_app.py)")
 
     custom_objects = {"CTC_loss": CTC_loss}
     with keras.utils.custom_object_scope(custom_objects):
