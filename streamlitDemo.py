@@ -163,6 +163,12 @@ def CTC_loss(y_test, y_pred):
 
     return loss
 
+@st.cache(ttl = 300)
+def loadModel():
+    custom_objects = {"CTC_loss": CTC_loss}
+    with keras.utils.custom_object_scope(custom_objects):
+        model = keras.models.load_model('model/model.h5')
+        return model
 
 pages = ["Demo", "CTC algorithm", "Dataset", "Model", "Results"]
 
@@ -174,12 +180,9 @@ if page==pages[0]:
     st.write("It's far from perfect but it's a homemade, end-to-end model. Not some pre-trained thing!")
     st.write("ChatGPT, we're coming for you")
     st.write("Credit to [stefanrmmr](https://github.com/stefanrmmr/streamlit_audio_recorder) for the streamlit audio recorder")
- 
-    custom_objects = {"CTC_loss": CTC_loss}
-    with keras.utils.custom_object_scope(custom_objects):
-        model5 = keras.models.load_model('model/model.h5')
+     
+    model5 = loadModel()
     
-
     parent_dir = os.path.dirname(os.path.abspath(__file__))
     build_dir = os.path.join(parent_dir, "st_audiorec/frontend/build")
     st_audiorec = components.declare_component("st_audiorec", path=build_dir)
