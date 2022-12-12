@@ -328,7 +328,7 @@ if page==pages[1]:
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
-        alignement = st.checkbox("alignment")
+        alignement = st.checkbox("The alignment problem")
         if alignement:
             st.write("- We have audio records, and their transcriptions, but no way to align both...")
         st.markdown('#')
@@ -336,15 +336,15 @@ if page==pages[1]:
         st.markdown('#')
         st.markdown('#')
         
-        CTC = st.checkbox("CTC algorithm: principle")     
+        CTC = st.checkbox("A solution: CTC algorithm")     
         if CTC:
             st.write("""
                      - Assign a probability to each alphabet's character per time-step 
                      - Maximize the probability of all alignments consistent with the label targeted
-                     - One constraint: predictions' length are capped by the the number of time-steps
+                     - Predictions' length are capped by the the number of time-steps
                      
-                     [Here](https://distill.pub/2017/ctc/) is a much better explantion.
-                     And [here](https://www.cs.toronto.edu/~graves/icml_2006.pdf) is the original paper on CTC algorithm.
+                     Curious about CTC algorithm? [Here](https://distill.pub/2017/ctc/) is a much better explanation.
+                     And [here](https://www.cs.toronto.edu/~graves/icml_2006.pdf) is the original paper.
                      """)
     
     with col2:
@@ -465,9 +465,9 @@ if page==pages[4]:
     
     precision_v12big = [df_results['v12big_' + str(k)+ '_d'].mean() for k in range(1, 10)] 
     
-    with st.expander("CTC loss  / Précision"):
+    with st.expander("CTC loss  / Accuracy"):
     
-        st.write("""Starting from a baseline, we tried several options on 
+        st.write("""Starting from a baseline configuration, we tried several options on 
                  12 epochs, 800 train / 200 test samples (approx 1h under Colab premium GPU).
                  Then our champion was trained on 9 epochs over 28 000 train / 2500 test samples.
                  Finally, we use Levenshtein's distance to measure accuracy.
