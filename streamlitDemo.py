@@ -180,9 +180,9 @@ st.sidebar.write("[GitHub](https://github.com/PhilippeMoussa/speechRecognition)"
 
 if page==pages[0]:
     st.title('Speech Recognition')
-    st.write("Try for yourself and laugh at the model's efforts to transcribe what you said")
+    st.write("Try for yourself and laugh at the model's efforts to transcribe what you said.")
     st.write("It's far from perfect but it's a homemade, end-to-end model. Not some pre-trained thing!")
-    st.write("ChatGPT, we're coming for you")
+    st.write("ChatGPT, we're coming for you.")
     st.write("Credit to [stefanrmmr](https://github.com/stefanrmmr/streamlit_audio_recorder) for the streamlit audio recorder")
      
     model5 = loadModel()
@@ -257,14 +257,11 @@ if page==pages[2]:
     
     st.title('Dataset')
 
-    st.write('We used a (too) small extract of the [LibriSpeech ASR corpus](https://www.openslr.org/12) to train our model')    
-    
+    st.write('We used a (too) small extract of the [LibriSpeech ASR corpus](https://www.openslr.org/12) to train our model:')    
     st.write("""
-             Working on 30+ k (7 Go / 100+ h) of records and their transcripts, we need to:
-                        
-            - normalize the audio duration
-            
-            - maintain consistency between transcript's length and our choice of time-step
+             working on 30+ k (7 Go / 100+ h) of audio records and their transcriptions, we just had to:                        
+            - normalize the audio duration            
+            - maintain consistency between the length of transcriptions and our choice of time-step
              """)
     
     with open('data/train_metadata_full', 'rb') as f:
