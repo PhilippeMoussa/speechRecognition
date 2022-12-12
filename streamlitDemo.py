@@ -163,7 +163,7 @@ def CTC_loss(y_test, y_pred):
 
     return loss
 
-@st.cache(ttl = 300)
+@st.cache(ttl = 300, allow_output_mutation=True)
 def loadModel():
     custom_objects = {"CTC_loss": CTC_loss}
     with keras.utils.custom_object_scope(custom_objects):
