@@ -277,12 +277,50 @@ def predict(model, filePath):
 
 
 
-pages = ["CTC loss", "Dataset exploration", "Model", "Pipeline", 
-         "Results", "Demo", "Conclusion"]
+pages = ["Demo", "CTC loss", "Dataset", "Model", "Results"]
 
 page = st.sidebar.radio("navigate", pages)
 
 if page==pages[0]:
+    st.title('Speech Recognition')
+    st.write("Try for yourself and laugh at the model's efforts to transcribe what you said")
+    st.write("It's far from perfect but it's a homemade, end-to-end model. Not some pre-trained thing!")
+    st.write("ChatGPT, we're coming for you")
+    st.write("Credit to [stefanrmmr] (https://github.com/stefanrmmr/streamlit_audio_recorder/commits?author=stefanrmmr) for the audiorecorder:")")
+
+
+    custom_objects = {"CTC_loss": CTC_loss}
+    with keras.utils.custom_object_scope(custom_objects):
+        model5 = keras.models.load_model('model/model.h5')
+    
+
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    build_dir = os.path.join(parent_dir, "st_audiorec/frontend/build")
+    st_audiorec = components.declare_component("st_audiorec", path=build_dir)
+
+    val = st_audiorec()
+ 
+    if isinstance(val, dict):  # retrieve audio data
+        with st.spinner('retrieving audio-recording...'):
+            ind, val = zip(*val['arr'].items())
+            ind = np.array(ind, dtype=int)  # convert to np array
+            val = np.array(val)             # convert to np array
+            sorted_ints = val[ind]
+            stream = BytesIO(b"".join([int(v).to_bytes(1, "big") for v in sorted_ints]))
+            wav_bytes = stream.read()
+
+        # wav_bytes contains audio data in format to be further processed
+        # display audio data as received on the Python side
+        #st.audio(wav_bytes, format='audio/wav')
+
+        audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
+        signalPredict(model5, audioSignal, 16000, 17)
+
+
+
+
+
+if page==pages[1]:
     st.title("CTC loss")
 
     col1, col2 = st.columns([3, 6])
@@ -322,7 +360,7 @@ if page==pages[0]:
             st.image('images/scripts.jpg', width = 400)
         
     
-if page==pages[1]:
+if page==pages[2]:
     
     st.title('Dataset exploration')
     st.header('LibriSpeech extract - English')    
@@ -374,7 +412,7 @@ if page==pages[1]:
         plt.ylabel('label length (nb char)', fontsize = 12)
         st.pyplot(fig)
 
-if page==pages[2]:
+if page==pages[3]:
     
     st.title('Model')
     st.subheader("Building on a structure derived from Deep Speech 2 ")
@@ -401,39 +439,6 @@ if page==pages[2]:
         st.image('images/model2.jpg', width = 600)
     if output:
         st.image('images/model3.jpg', width = 600)
-
-
-if page==pages[3]:
-    
-    st.title('Data pipeline')
-
-    st.markdown("##")
-    
-    col1, col2, col3 = st.columns(3, gap = "small")
-
-    with col1:    
-        preprocessing = st.checkbox('Preprocessing')
-    with col2:
-        augmentation = st.checkbox('Augmentation')
-    with col3:
-        modele = st.checkbox('Model')
-    
-    st.write("\n")
-
-    st.image('images/pipeline0.jpg', width = 600)
-    
-    placeholder1 = st.empty()
-    placeholder2 = st.empty()
-    placeholder3 = st.empty()
-    placeholder4 = st.empty()
-    
-    if preprocessing:
-        placeholder1.image('images/pipeline1.jpg', width = 600)
-    if augmentation:
-        placeholder2.image('images/pipeline2.jpg', width = 600)
-    if modele:
-        placeholder3.image('images/pipeline3.jpg', width = 600)
-        placeholder4.image('images/pipeline4.jpg', width = 600)
 
     
 if page==pages[4]:
@@ -515,122 +520,7 @@ if page==pages[4]:
     st.button("random select", on_click = 
               randomDisplay(df_results, selection[0], selection[1]))
 
-    with st.expander("Tests"):
-        st.write("""Auto-test de notre modèle!""")
-
-        custom_objects = {"CTC_loss": CTC_loss}
-        with keras.utils.custom_object_scope(custom_objects):
-            model5 = keras.models.load_model('model/model.h5')
-
-        file_dic = {"Sample 1": "samples/proud.m4a",
-                    "Sample 2": "samples/learn.m4a", }
-
-        option = st.selectbox(
-            "Sélectionnez un fichier audio à transcrire", ("Sample 1", "Sample 2"))
-
-        wav_file = file_dic[option]
-
-        col1, col2 = st.columns(2)
-        with col1:
-            if wav_file:
-                st.audio(wav_file)
-        with col2:
-            if wav_file:
-                if st.button("predict"):
-                    predict(model5, filePath=wav_file)
-
-
-if page==pages[5]:
-    st.title('Try for yourself')
-
-    custom_objects = {"CTC_loss": CTC_loss}
-    with keras.utils.custom_object_scope(custom_objects):
-        model5 = keras.models.load_model('model/model.h5')
-    
-
-    parent_dir = os.path.dirname(os.path.abspath(__file__))
-    build_dir = os.path.join(parent_dir, "st_audiorec/frontend/build")
-    st_audiorec = components.declare_component("st_audiorec", path=build_dir)
-
-    val = st_audiorec()
-    # web component returns arraybuffer from WAV-blob
-    #st.write('Audio data received in the Python backend will appear below this message ...')
-
-    if isinstance(val, dict):  # retrieve audio data
-        with st.spinner('retrieving audio-recording...'):
-            ind, val = zip(*val['arr'].items())
-            ind = np.array(ind, dtype=int)  # convert to np array
-            val = np.array(val)             # convert to np array
-            sorted_ints = val[ind]
-            stream = BytesIO(b"".join([int(v).to_bytes(1, "big") for v in sorted_ints]))
-            wav_bytes = stream.read()
-
-        # wav_bytes contains audio data in format to be further processed
-        # display audio data as received on the Python side
-        #st.audio(wav_bytes, format='audio/wav')
-
-        audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
-        signalPredict(model5, audioSignal, 16000, 17)
 
 
 
-if page==pages[6]:
-    
-    st.title('Conclusion ')
 
-    st.markdown("###")
-    st.write("""
-             Our thanks to DataScientest and our mentor Paul Lestrat!
-             """)
-    st.markdown("###")
-
-    st.header("A few follow-up ideas")
-
-    st.markdown("###")
-
-    with st.container():
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("#")
-            st.write("""
-            - (Much) more training data
-                - Deep Speech 2: 11 000h records! 
-            - Other data augmentation
-                - stretching, pitch shifting
-                - real life noises
-            - Other configurations pre-processing/augmentation/model
-            """)
-        with col2:
-            st.image('images/audioData.jpg', width = 400)
-    
-    st.markdown("##")
-    
-    with st.container():
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("#")
-            st.markdown("#")
-            st.markdown("#")
-            st.write("""
-                     - Improve decoding of predictions
-                     - Metric: move on to word error rate 
-                     """)
-        with col2:
-            st.image('images/MLmetrics.jpg', width = 400)
-
-    st.markdown("##")
-    
-    with st.container():
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("""
-                     - Language model: lexicon, n-grams
-                     """)
-        with col2:
-            st.image("images/languageModel.png", width = 400)
-  
-    st.markdown("##")
-  
-    with st.container():
-         st.write("...")
-                 
