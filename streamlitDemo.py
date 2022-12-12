@@ -327,12 +327,9 @@ if page==pages[1]:
     with col1:
         st.markdown('#')
         st.markdown('#')
-        st.markdown('#')
         alignement = st.checkbox("The alignment problem")
         if alignement:
             st.write("- We have audio records, and their transcriptions, but no way to align both...")
-        st.markdown('#')
-        st.markdown('#')
         st.markdown('#')
         st.markdown('#')
         
@@ -343,7 +340,7 @@ if page==pages[1]:
                      - Maximize the probability of all alignments consistent with the label targeted
                      - Predictions' length are capped by the the number of time-steps
                      
-                     Curious about CTC algorithm? [Here](https://distill.pub/2017/ctc/) is a much better explanation.
+                     Want to know more? [Here](https://distill.pub/2017/ctc/) is a much better explanation.
                      And [here](https://www.cs.toronto.edu/~graves/icml_2006.pdf) is the original paper.
                      """)
     
