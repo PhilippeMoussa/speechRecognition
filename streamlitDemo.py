@@ -184,8 +184,6 @@ if page==pages[0]:
     st.write("It's far from perfect but it's a homemade, end-to-end model. Not some pre-trained thing!")
     st.write("Credit to [stefanrmmr](https://github.com/stefanrmmr/streamlit_audio_recorder) for the streamlit audio recorder")
      
-    model5 = loadModel()
-    
     parent_dir = os.path.dirname(os.path.abspath(__file__))
     build_dir = os.path.join(parent_dir, "st_audiorec/frontend/build")
     st_audiorec = components.declare_component("st_audiorec", path=build_dir)
@@ -206,6 +204,7 @@ if page==pages[0]:
         #st.audio(wav_bytes, format='audio/wav')
 
         audioSignal = np.asarray(np.frombuffer(stream.getbuffer(), dtype = "int32"), dtype = np.float64)
+        model5 = loadModel()
         signalPredict(model5, audioSignal, 16000, 17)
 
 
