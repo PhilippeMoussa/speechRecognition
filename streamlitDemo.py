@@ -333,6 +333,7 @@ if page==pages[1]:
         st.markdown('#')
         st.markdown('#')
         st.markdown('#')
+        st.markdown('#')
       
 
         CTC = st.checkbox("A solution: CTC algorithm")     
